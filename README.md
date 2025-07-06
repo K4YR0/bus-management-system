@@ -52,10 +52,6 @@ BusManagementSystem/
 │   └── main.c                  # Main application source code
 ├── include/
 │   └── bus_management_system.h # Header file with declarations
-├── data/
-│   └── users.txt              # User authentication data
-├── docs/
-│   └── REFACTORING_SUMMARY.md # Development documentation
 └── README.md                  # Project documentation
 ```
 
@@ -70,7 +66,7 @@ BusManagementSystem/
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/bus-management-system.git
+   git clone https://github.com/K4YR0/bus-management-system.git
    cd bus-management-system
    ```
 
@@ -215,13 +211,6 @@ This project was developed as part of a computer science curriculum, demonstrati
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 👨‍💻 Author
-
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn Profile](https://linkedin.com/in/yourprofile)
-- Email: your.email@example.com
 
 ---
 

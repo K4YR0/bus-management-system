@@ -104,6 +104,11 @@ void set_console_color(int color);
 void print_header(const char* title);
 void pause_screen(void);
 
+// Utility functions to check data existence
+int has_buses(Bus *head);
+int has_clients(Client *head);
+int has_functions(Function *head);
+
 // Date validation functions
 int is_valid_date(int day, int month, int year);
 int is_leap_year(int year);
@@ -114,7 +119,6 @@ void write_users_to_file(User users[], int num_users);
 int read_users_from_file(User users[]);
 int authenticate_user(User users[], int num_users);
 void register_user(User users[], int *num_users);
-void display_users(User users[], int num_users);
 
 // Bus management functions
 Bus* add_bus_at_beginning(Bus *head);
