@@ -326,7 +326,7 @@ Bus* add_bus_at_end(Bus *head) {
 
 void display_buses(Bus *head) {
     if (head == NULL) {
-        printf("⚠️  No buses found in the system.\n");
+        printf("  No buses found in the system.\n");
         printf("You need to add buses first to view them.\n");
         printf("Please go to 'Bus Management' -> 'Add New Bus' to create your first bus.\n");
         return;
@@ -351,7 +351,7 @@ void display_buses(Bus *head) {
 
     temp = head;
     while (temp != NULL) {
-        printf("%-15d %-15.2f %02d/%02d/%-8d %-15d\n",
+        printf("%-15d %-15.2f %02d/%02d/%-8d  %-15d\n",
                temp->license_plate,
                temp->price,
                temp->purchase_date.day,
@@ -364,7 +364,7 @@ void display_buses(Bus *head) {
 
 Bus* modify_bus(Bus *head) {
     if (head == NULL) {
-        printf("⚠️  No buses found in the system.\n");
+        printf("  No buses found in the system.\n");
         printf("You need to add buses first before modifying them.\n");
         printf("Please go to 'Bus Management' -> 'Add New Bus' to create your first bus.\n");
         return head;
@@ -424,7 +424,7 @@ Bus* modify_bus(Bus *head) {
 
 Bus* delete_bus(Bus *head) {
     if (head == NULL) {
-        printf("⚠️  No buses found in the system.\n");
+        printf("  No buses found in the system.\n");
         printf("You need to add buses first before deleting them.\n");
         printf("Please go to 'Bus Management' -> 'Add New Bus' to create your first bus.\n");
         return head;
@@ -478,7 +478,7 @@ Bus* delete_bus(Bus *head) {
 
 void search_bus(Bus *head) {
     if (head == NULL) {
-        printf("⚠️  No buses found in the system.\n");
+        printf("  No buses found in the system.\n");
         printf("You need to add buses first before searching for them.\n");
         printf("Please go to 'Bus Management' -> 'Add New Bus' to create your first bus.\n");
         return;
@@ -698,7 +698,7 @@ Client* add_client_at_end(Client *head) {
 
 void display_clients(Client *head) {
     if (head == NULL) {
-        printf("⚠️  No clients found in the system.\n");
+        printf("  No clients found in the system.\n");
         printf("You need to add clients first to view them.\n");
         printf("Please go to 'Client Management' -> 'Add New Client' to create your first client.\n");
         return;
@@ -717,15 +717,15 @@ void display_clients(Client *head) {
     printf("Total clients in database: %d\n\n", client_count);
     
     set_console_color(2);
-    printf("%-10s %-15s %-15s %-15s %-15s %-15s %-10s\n", 
+    printf("%-10s %-15s %-15s %-15s %-15s %-30s %-10s\n", 
            "ID", "First Name", "Last Name", "Phone", "City", "Province", "Postal Code");
-    printf("%-10s %-15s %-15s %-15s %-15s %-15s %-10s\n", 
+    printf("%-10s %-15s %-15s %-15s %-15s %-30s %-10s\n", 
            "==", "==========", "=========", "=====", "====", "========", "===========");
     set_console_color(7);
 
     temp = head;
     while (temp != NULL) {
-        printf("%-10d %-15s %-15s %-15s %-15s %-15s %-10d\n",
+        printf("%-10d %-15s %-15s %-15s %-15s %-30s %-10d\n",
                temp->client_id,
                temp->first_name,
                temp->last_name,
@@ -739,7 +739,7 @@ void display_clients(Client *head) {
 
 Client* modify_client(Client *head) {
     if (head == NULL) {
-        printf("⚠️  No clients found in the system.\n");
+        printf("  No clients found in the system.\n");
         printf("You need to add clients first before modifying them.\n");
         printf("Please go to 'Client Management' -> 'Add New Client' to create your first client.\n");
         return head;
@@ -789,7 +789,7 @@ Client* modify_client(Client *head) {
 
 Client* delete_client(Client *head) {
     if (head == NULL) {
-        printf("⚠️  No clients found in the system.\n");
+        printf("  No clients found in the system.\n");
         printf("You need to add clients first before deleting them.\n");
         printf("Please go to 'Client Management' -> 'Add New Client' to create your first client.\n");
         return head;
@@ -843,7 +843,7 @@ Client* delete_client(Client *head) {
 
 void search_client(Client *head) {
     if (head == NULL) {
-        printf("⚠️  No clients found in the system.\n");
+        printf("  No clients found in the system.\n");
         printf("You need to add clients first before searching for them.\n");
         printf("Please go to 'Client Management' -> 'Add New Client' to create your first client.\n");
         return;
@@ -926,9 +926,32 @@ Client* load_clients_from_file(Client *head) {
     int client_id, postal_code;
     char first_name[MAX_STRING_LENGTH], last_name[MAX_STRING_LENGTH];
     char phone[MAX_PHONE_LENGTH], city[MAX_STRING_LENGTH], province[MAX_STRING_LENGTH];
+    char buffer[MAX_STRING_LENGTH];
     
-    while (fscanf(file, "%d\n%99s\n%99s\n%14s\n%99s\n%99s\n%d\n", 
-                  &client_id, first_name, last_name, phone, city, province, &postal_code) == 7) {
+    while (fscanf(file, "%d\n", &client_id) == 1) {
+        // Read first name
+        if (fgets(first_name, MAX_STRING_LENGTH, file) == NULL) break;
+        first_name[strcspn(first_name, "\n")] = '\0'; // Remove newline
+        
+        // Read last name
+        if (fgets(last_name, MAX_STRING_LENGTH, file) == NULL) break;
+        last_name[strcspn(last_name, "\n")] = '\0'; // Remove newline
+        
+        // Read phone
+        if (fgets(phone, MAX_PHONE_LENGTH, file) == NULL) break;
+        phone[strcspn(phone, "\n")] = '\0'; // Remove newline
+        
+        // Read city
+        if (fgets(city, MAX_STRING_LENGTH, file) == NULL) break;
+        city[strcspn(city, "\n")] = '\0'; // Remove newline
+        
+        // Read province
+        if (fgets(province, MAX_STRING_LENGTH, file) == NULL) break;
+        province[strcspn(province, "\n")] = '\0'; // Remove newline
+        
+        // Read postal code
+        if (fscanf(file, "%d\n", &postal_code) != 1) break;
+        
         new_client = (Client*)malloc(sizeof(Client));
         if (new_client == NULL) {
             fclose(file);
@@ -937,10 +960,15 @@ Client* load_clients_from_file(Client *head) {
 
         new_client->client_id = client_id;
         strncpy(new_client->first_name, first_name, MAX_STRING_LENGTH - 1);
+        new_client->first_name[MAX_STRING_LENGTH - 1] = '\0';
         strncpy(new_client->last_name, last_name, MAX_STRING_LENGTH - 1);
+        new_client->last_name[MAX_STRING_LENGTH - 1] = '\0';
         strncpy(new_client->phone, phone, MAX_PHONE_LENGTH - 1);
+        new_client->phone[MAX_PHONE_LENGTH - 1] = '\0';
         strncpy(new_client->city, city, MAX_STRING_LENGTH - 1);
+        new_client->city[MAX_STRING_LENGTH - 1] = '\0';
         strncpy(new_client->province, province, MAX_STRING_LENGTH - 1);
+        new_client->province[MAX_STRING_LENGTH - 1] = '\0';
         new_client->postal_code = postal_code;
         new_client->next = NULL;
 
@@ -972,7 +1000,7 @@ void free_client_list(Client *head) {
 Employee* add_employee_at_end(Employee *head, Function *functions) {
     // Check prerequisites first
     if (!has_functions(functions)) {
-        printf("⚠️  No job functions available in the system.\n");
+        printf("  No job functions available in the system.\n");
         printf("You need to create job functions first before adding employees.\n");
         printf("Please go to 'Function Management' -> 'Add New Function' to add job functions.\n");
         return head;
@@ -1034,7 +1062,7 @@ Employee* add_employee_at_end(Employee *head, Function *functions) {
 Employee* add_employee_at_beginning(Employee *head, Function *functions) {
     // Check prerequisites first
     if (!has_functions(functions)) {
-        printf("⚠️  No job functions available in the system.\n");
+        printf("  No job functions available in the system.\n");
         printf("You need to create job functions first before adding employees.\n");
         printf("Please go to 'Function Management' -> 'Add New Function' to add job functions.\n");
         return head;
@@ -1081,7 +1109,7 @@ Employee* add_employee_at_beginning(Employee *head, Function *functions) {
 
 void display_employees(Employee *head, Function *functions) {
     if (head == NULL) {
-        printf("⚠️  No employees found in the system.\n");
+        printf("  No employees found in the system.\n");
         printf("You need to add employees first to view them.\n");
         printf("Please go to 'Employee Management' -> 'Add New Employee' to create your first employee.\n");
         return;
@@ -1433,7 +1461,7 @@ Function* add_function_at_end(Function *head) {
 
 void display_functions(Function *head) {
     if (head == NULL) {
-        printf("⚠️  No functions found in the system.\n");
+        printf("  No functions found in the system.\n");
         printf("You need to add job functions first to view them.\n");
         printf("Please go to 'Function Management' -> 'Add New Function' to create your first function.\n");
         return;
@@ -1468,7 +1496,7 @@ void display_functions(Function *head) {
 
 Function* modify_function(Function *head) {
     if (head == NULL) {
-        printf("⚠️  No functions found in the system.\n");
+        printf("  No functions found in the system.\n");
         printf("You need to add job functions first before modifying them.\n");
         printf("Please go to 'Function Management' -> 'Add New Function' to create your first function.\n");
         return head;
@@ -1509,7 +1537,7 @@ Function* modify_function(Function *head) {
 
 Function* delete_function(Function *head) {
     if (head == NULL) {
-        printf("⚠️  No functions found in the system.\n");
+        printf("  No functions found in the system.\n");
         printf("You need to add job functions first before deleting them.\n");
         printf("Please go to 'Function Management' -> 'Add New Function' to create your first function.\n");
         return head;
@@ -1562,7 +1590,7 @@ Function* delete_function(Function *head) {
 
 void search_function(Function *head) {
     if (head == NULL) {
-        printf("⚠️  No functions found in the system.\n");
+        printf("  No functions found in the system.\n");
         printf("You need to add job functions first before searching for them.\n");
         printf("Please go to 'Function Management' -> 'Add New Function' to create your first function.\n");
         return;
@@ -1690,14 +1718,14 @@ int is_valid_datetime(int day, int month, int year, int hour, int minute) {
 Trip* add_trip_at_beginning(Trip *head, Bus *buses, Client *clients) {
     // Check prerequisites first
     if (!has_buses(buses)) {
-        printf("⚠️  No buses available in the system.\n");
+        printf("  No buses available in the system.\n");
         printf("You need to add buses first before creating trips.\n");
         printf("Please go to 'Bus Management' -> 'Add New Bus' to add your first bus.\n");
         return head;
     }
     
     if (!has_clients(clients)) {
-        printf("⚠️  No clients available in the system.\n");
+        printf("  No clients available in the system.\n");
         printf("You need to add clients first before creating trips.\n");
         printf("Please go to 'Client Management' -> 'Add New Client' to add your first client.\n");
         return head;
@@ -1815,14 +1843,14 @@ Trip* add_trip_at_beginning(Trip *head, Bus *buses, Client *clients) {
 Trip* add_trip_at_end(Trip *head, Bus *buses, Client *clients) {
     // Check prerequisites first
     if (!has_buses(buses)) {
-        printf("⚠️  No buses available in the system.\n");
+        printf("  No buses available in the system.\n");
         printf("You need to add buses first before creating trips.\n");
         printf("Please go to 'Bus Management' -> 'Add New Bus' to add your first bus.\n");
         return head;
     }
     
     if (!has_clients(clients)) {
-        printf("⚠️  No clients available in the system.\n");
+        printf("  No clients available in the system.\n");
         printf("You need to add clients first before creating trips.\n");
         printf("Please go to 'Client Management' -> 'Add New Client' to add your first client.\n");
         return head;
@@ -1952,7 +1980,7 @@ Trip* add_trip_at_end(Trip *head, Bus *buses, Client *clients) {
 
 void display_trips(Trip *head, Bus *buses, Client *clients) {
     if (head == NULL) {
-        printf("⚠️  No trips found in the system.\n");
+        printf("  No trips found in the system.\n");
         printf("You need to add trips first to view them.\n");
         printf("Please go to 'Trip Management' -> 'Add New Trip' to create your first trip.\n");
         return;
@@ -1979,7 +2007,7 @@ void display_trips(Trip *head, Bus *buses, Client *clients) {
 
     temp = head;
     while (temp != NULL) {
-        printf("%-10d %-10d %-15s %-15s %02d/%02d/%d %02d:%02d   %02d/%02d/%d %02d:%02d\n",
+        printf("%-10d %-10d %-15s %-15s %02d/%02d/%d %02d:%02d     %02d/%02d/%d %02d:%02d\n",
                temp->license_plate,
                temp->client_id,
                temp->departure_city,
@@ -2000,7 +2028,7 @@ void display_trips(Trip *head, Bus *buses, Client *clients) {
 
 Trip* modify_trip(Trip *head, Bus *buses, Client *clients) {
     if (head == NULL) {
-        printf("⚠️  No trips found in the system.\n");
+        printf("  No trips found in the system.\n");
         printf("You need to add trips first before modifying them.\n");
         printf("Please go to 'Trip Management' -> 'Add New Trip' to create your first trip.\n");
         return head;
@@ -2008,13 +2036,13 @@ Trip* modify_trip(Trip *head, Bus *buses, Client *clients) {
 
     // Check prerequisites
     if (!has_buses(buses)) {
-        printf("⚠️  No buses available in the system.\n");
+        printf("  No buses available in the system.\n");
         printf("You need buses available to modify trips.\n");
         return head;
     }
     
     if (!has_clients(clients)) {
-        printf("⚠️  No clients available in the system.\n");
+        printf("  No clients available in the system.\n");
         printf("You need clients available to modify trips.\n");
         return head;
     }
@@ -2102,7 +2130,7 @@ Trip* modify_trip(Trip *head, Bus *buses, Client *clients) {
 
 Trip* delete_trip(Trip *head) {
     if (head == NULL) {
-        printf("⚠️  No trips found in the system.\n");
+        printf("  No trips found in the system.\n");
         printf("You need to add trips first before deleting them.\n");
         printf("Please go to 'Trip Management' -> 'Add New Trip' to create your first trip.\n");
         return head;
@@ -2160,7 +2188,7 @@ Trip* delete_trip(Trip *head) {
 
 void search_trip(Trip *head, Bus *buses, Client *clients) {
     if (head == NULL) {
-        printf("⚠️  No trips found in the system.\n");
+        printf("  No trips found in the system.\n");
         printf("You need to add trips first before searching for them.\n");
         printf("Please go to 'Trip Management' -> 'Add New Trip' to create your first trip.\n");
         return;
