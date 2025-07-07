@@ -1,10 +1,5 @@
 #include "../include/bus_management_system.h"
 
-// Tic-tac-toe game variables
-char board[3][3];
-const char PLAYER = 'X';
-const char COMPUTER = 'O';
-
 // Utility functions
 void safe_string_input(char *buffer, size_t buffer_size) {
     if (fgets(buffer, buffer_size, stdin) != NULL) {
@@ -2356,7 +2351,7 @@ int main() {
                     functions = load_functions_from_file(functions);
                     trips = load_trips_from_file(trips);
                     // printf("System ready!\n");
-                    pause_screen();
+                    // pause_screen();
                     
                     main_menu(&buses, &clients, &employees, &functions, &trips);
                 } else {
@@ -2380,13 +2375,13 @@ int main() {
     
     // Auto-save all data before exit
     if (buses || clients || employees || functions || trips) {
-        printf("Saving system data...\n");
+        // printf("Saving system data...\n");
         save_buses_to_file(buses);
         save_clients_to_file(clients);
         save_employees_to_file(employees);
         save_functions_to_file(functions);
         save_trips_to_file(trips);
-        printf("Data saved successfully!\n");
+        // printf("Data saved successfully!\n");
     }
     
     // Free memory
@@ -2411,9 +2406,7 @@ void main_menu(Bus **buses, Client **clients, Employee **employees, Function **f
         printf("3. Employee Management\n");
         printf("4. Function Management\n");
         printf("5. Trip Management\n");
-        printf("6. Play Tic-Tac-Toe\n");
-        printf("7. Play Rock Paper Scissors\n");
-        printf("8. Save All Data\n");
+        printf("6. Save All Data\n");
         printf("0. Logout\n");
         set_console_color(7);
         printf("\nEnter your choice: ");
@@ -2436,12 +2429,6 @@ void main_menu(Bus **buses, Client **clients, Employee **employees, Function **f
                 trip_menu(*buses, *clients, *employees, *functions, trips);
                 break;
             case 6:
-                play_tic_tac_toe();
-                break;
-            case 7:
-                play_rock_paper_scissors();
-                break;
-            case 8:
                 printf("Saving all data...\n");
                 save_buses_to_file(*buses);
                 save_clients_to_file(*clients);
@@ -2452,14 +2439,14 @@ void main_menu(Bus **buses, Client **clients, Employee **employees, Function **f
                 break;
             case 0:
                 printf("\nLogging out...\n");
-                // Auto-save before logout
-                printf("Auto-saving data...\n");
+                // // Auto-save before logout
+                // printf("Auto-saving data...\n");
                 save_buses_to_file(*buses);
                 save_clients_to_file(*clients);
                 save_employees_to_file(*employees);
                 save_functions_to_file(*functions);
                 save_trips_to_file(*trips);
-                printf("Data saved successfully!\n");
+                // printf("Data saved successfully!\n");
                 break;
             default:
                 printf("\nInvalid choice. Please try again.\n");
@@ -2774,175 +2761,6 @@ void trip_menu(Bus *buses, Client *clients, Employee *employees, Function *funct
             pause_screen();
         }
     } while (choice != 0);
-}
-
-// Tic-tac-toe game functions
-void reset_board() {
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            board[i][j] = ' ';
-        }
-    }
-}
-
-void print_board() {
-    printf("\n");
-    printf(" %c | %c | %c \n", board[0][0], board[0][1], board[0][2]);
-    printf("---|---|---\n");
-    printf(" %c | %c | %c \n", board[1][0], board[1][1], board[1][2]);
-    printf("---|---|---\n");
-    printf(" %c | %c | %c \n", board[2][0], board[2][1], board[2][2]);
-    printf("\n");
-}
-
-int check_free_spaces() {
-    int free_spaces = 9;
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            if (board[i][j] != ' ') {
-                free_spaces--;
-            }
-        }
-    }
-    return free_spaces;
-}
-
-void player_move() {
-    int x, y;
-    do {
-        printf("Enter row (1-3): ");
-        x = safe_int_input() - 1;
-        printf("Enter column (1-3): ");
-        y = safe_int_input() - 1;
-        
-        if (x < 0 || x > 2 || y < 0 || y > 2) {
-            printf("Invalid coordinates!\n");
-        } else if (board[x][y] != ' ') {
-            printf("Invalid move!\n");
-        } else {
-            board[x][y] = PLAYER;
-            break;
-        }
-    } while (1);
-}
-
-void computer_move() {
-    srand(time(0));
-    int x, y;
-    
-    if (check_free_spaces() > 0) {
-        do {
-            x = rand() % 3;
-            y = rand() % 3;
-        } while (board[x][y] != ' ');
-        
-        board[x][y] = COMPUTER;
-    }
-}
-
-char check_winner() {
-    // Check rows
-    for (int i = 0; i < 3; i++) {
-        if (board[i][0] == board[i][1] && board[i][0] == board[i][2]) {
-            return board[i][0];
-        }
-    }
-    
-    // Check columns
-    for (int i = 0; i < 3; i++) {
-        if (board[0][i] == board[1][i] && board[0][i] == board[2][i]) {
-            return board[0][i];
-        }
-    }
-    
-    // Check diagonals
-    if (board[0][0] == board[1][1] && board[0][0] == board[2][2]) {
-        return board[0][0];
-    }
-    if (board[0][2] == board[1][1] && board[0][2] == board[2][0]) {
-        return board[0][2];
-    }
-    
-    return ' ';
-}
-
-void print_winner(char winner) {
-    if (winner == PLAYER) {
-        printf("YOU WIN!\n");
-    } else if (winner == COMPUTER) {
-        printf("YOU LOSE!\n");
-    } else {
-        printf("IT'S A TIE!\n");
-    }
-}
-
-void play_tic_tac_toe() {
-    char winner = ' ';
-    char response;
-    
-    do {
-        winner = ' ';
-        response = ' ';
-        reset_board();
-        
-        while (winner == ' ' && check_free_spaces() != 0) {
-            print_board();
-            player_move();
-            winner = check_winner();
-            if (winner != ' ' || check_free_spaces() == 0) {
-                break;
-            }
-            
-            computer_move();
-            winner = check_winner();
-            if (winner != ' ' || check_free_spaces() == 0) {
-                break;
-            }
-        }
-        
-        print_board();
-        print_winner(winner);
-        
-        printf("\nWould you like to play again? (Y/N): ");
-        scanf(" %c", &response);
-        response = toupper(response);
-        
-    } while (response == 'Y');
-    
-    printf("Thanks for playing!\n");
-}
-
-void play_rock_paper_scissors() {
-    printf("Rock Paper Scissors Game\n");
-    printf("1. Rock\n");
-    printf("2. Paper\n");
-    printf("3. Scissors\n");
-    
-    int player_choice;
-    printf("Enter your choice (1-3): ");
-    player_choice = safe_int_input();
-    
-    if (player_choice < 1 || player_choice > 3) {
-        printf("Invalid choice!\n");
-        return;
-    }
-    
-    srand(time(0));
-    int computer_choice = (rand() % 3) + 1;
-    
-    const char* choices[] = {"Rock", "Paper", "Scissors"};
-    printf("You chose: %s\n", choices[player_choice - 1]);
-    printf("Computer chose: %s\n", choices[computer_choice - 1]);
-    
-    if (player_choice == computer_choice) {
-        printf("It's a tie!\n");
-    } else if ((player_choice == 1 && computer_choice == 3) ||
-               (player_choice == 2 && computer_choice == 1) ||
-               (player_choice == 3 && computer_choice == 2)) {
-        printf("You win!\n");
-    } else {
-        printf("You lose!\n");
-    }
 }
 
 // Utility functions to check if data exists

@@ -88,11 +88,6 @@ typedef struct Trip {
     struct Trip *next;
 } Trip;
 
-// Tic-tac-toe game constants
-extern char board[3][3];
-extern const char PLAYER;
-extern const char COMPUTER;
-
 // Function prototypes
 
 // Utility functions
@@ -187,16 +182,5 @@ void client_choice_menu(Bus *buses, Client **clients, Employee *employees, Funct
 void employee_choice_menu(Bus *buses, Client *clients, Employee **employees, Function *functions, Trip *trips);
 void function_choice_menu(Bus *buses, Client *clients, Employee *employees, Function **functions, Trip *trips);
 void trip_choice_menu(Bus *buses, Client *clients, Employee *employees, Function *functions, Trip **trips);
-
-// Game functions
-void play_tic_tac_toe(void);
-void play_rock_paper_scissors(void);
-void reset_board(void);
-void print_board(void);
-int check_free_spaces(void);
-void player_move(void);
-void computer_move(void);
-char check_winner(void);
-void print_winner(char winner);
 
 #endif // BUS_MANAGEMENT_SYSTEM_H
