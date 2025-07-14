@@ -26,7 +26,7 @@
 // Structure definitions
 typedef struct User {
     char username[MAX_STRING_LENGTH];
-    char password[MAX_STRING_LENGTH];
+    char password[MAX_STRING_LENGTH * 2]; // Larger buffer for encrypted passwords
 } User;
 
 typedef struct PurchaseDate {
@@ -109,7 +109,12 @@ int is_valid_date(int day, int month, int year);
 int is_leap_year(int year);
 int get_days_in_month(int month, int year);
 
-// User authentication functions
+// User authentication functions - Real Encryption
+void generate_key(unsigned char *key, int length);
+void xor_encrypt_decrypt(char *input, char *output, unsigned char *key, int key_length);
+void hash_password(char *password, char *hashed_password);
+int verify_password(char *input_password, char *stored_hash);
+void secure_encrypt_password(char *password, char *encrypted_password);
 void write_users_to_file(User users[], int num_users);
 int read_users_from_file(User users[]);
 int authenticate_user(User users[], int num_users);

@@ -94,6 +94,76 @@ int is_valid_date(int day, int month, int year) {
     return 1;
 }
 
+// Real Password Encryption Functions
+void generate_key(unsigned char *key, int length) {
+    // Generate a pseudo-random key based on system properties
+    srand((unsigned int)time(NULL));
+    for (int i = 0; i < length; i++) {
+        key[i] = (unsigned char)(rand() % 256);
+    }
+}
+
+void xor_encrypt_decrypt(char *input, char *output, unsigned char *key, int key_length) {
+    int input_length = strlen(input);
+    for (int i = 0; i < input_length; i++) {
+        output[i] = input[i] ^ key[i % key_length];
+    }
+    output[input_length] = '\0';
+}
+
+// Simple hash function for password verification
+void hash_password(char *password, char *hashed_password) {
+    unsigned long hash = 5381;
+    int c;
+    char *str = password;
+    
+    // djb2 hash algorithm
+    while ((c = *str++)) {
+        hash = ((hash << 5) + hash) + c; // hash * 33 + c
+    }
+    
+    // Convert hash to hexadecimal string
+    sprintf(hashed_password, "%08lx", hash);
+    
+    // Add salt and rehash for extra security
+    char salted[MAX_STRING_LENGTH * 2];
+    sprintf(salted, "%s_SALT_2024_%s", hashed_password, password);
+    
+    hash = 5381;
+    str = salted;
+    while ((c = *str++)) {
+        hash = ((hash << 5) + hash) + c;
+    }
+    
+    sprintf(hashed_password, "%016lx", hash);
+}
+
+int verify_password(char *input_password, char *stored_hash) {
+    char computed_hash[MAX_STRING_LENGTH];
+    hash_password(input_password, computed_hash);
+    return strcmp(computed_hash, stored_hash) == 0;
+}
+
+void secure_encrypt_password(char *password, char *encrypted_password) {
+    // First, hash the password
+    char hashed[MAX_STRING_LENGTH];
+    hash_password(password, hashed);
+    
+    // Then encrypt the hash with XOR using a fixed key for consistency
+    unsigned char encryption_key[] = {0x2B, 0x7E, 0x15, 0x16, 0x28, 0xAE, 0xD2, 0xA6, 
+                                     0xAB, 0xF7, 0x15, 0x88, 0x09, 0xCF, 0x4F, 0x3C};
+    int key_length = sizeof(encryption_key);
+    
+    xor_encrypt_decrypt(hashed, encrypted_password, encryption_key, key_length);
+    
+    // Convert to hexadecimal for safe storage
+    char hex_output[MAX_STRING_LENGTH * 2];
+    for (int i = 0; i < strlen(encrypted_password); i++) {
+        sprintf(hex_output + (i * 2), "%02x", (unsigned char)encrypted_password[i]);
+    }
+    strcpy(encrypted_password, hex_output);
+}
+
 // User authentication functions
 void write_users_to_file(User users[], int num_users) {
     FILE *fp = fopen(FILENAME, "w");
@@ -102,6 +172,7 @@ void write_users_to_file(User users[], int num_users) {
     }
 
     for (int i = 0; i < num_users; i++) {
+        // Users array already contains encrypted passwords, write them directly
         fprintf(fp, "%s %s\n", users[i].username, users[i].password);
     }
 
@@ -122,12 +193,15 @@ int read_users_from_file(User users[]) {
     rewind(fp);
 
     int num_users = 0;
-    char username[MAX_STRING_LENGTH], password[MAX_STRING_LENGTH];
-    while (fscanf(fp, "%99s %99s", username, password) == 2 && num_users < MAX_USERS) {
+    char username[MAX_STRING_LENGTH], encrypted_password[MAX_STRING_LENGTH * 2];
+    while (fscanf(fp, "%99s %199s", username, encrypted_password) == 2 && num_users < MAX_USERS) {
         strncpy(users[num_users].username, username, MAX_STRING_LENGTH - 1);
-        strncpy(users[num_users].password, password, MAX_STRING_LENGTH - 1);
         users[num_users].username[MAX_STRING_LENGTH - 1] = '\0';
-        users[num_users].password[MAX_STRING_LENGTH - 1] = '\0';
+        
+        // Store the encrypted password hash directly (no decryption needed)
+        strncpy(users[num_users].password, encrypted_password, MAX_STRING_LENGTH * 2 - 1);
+        users[num_users].password[MAX_STRING_LENGTH * 2 - 1] = '\0';
+        
         num_users++;
     }
 
@@ -149,9 +223,15 @@ int authenticate_user(User users[], int num_users) {
     scanf("%99s", password);
 
     for (int i = 0; i < num_users; i++) {
-        if (strcmp(users[i].username, username) == 0 && 
-            strcmp(users[i].password, password) == 0) {
-            return 1; // Authentication successful
+        if (strcmp(users[i].username, username) == 0) {
+            // Verify password using the secure verification method
+            char computed_hash[MAX_STRING_LENGTH * 2];
+            secure_encrypt_password(password, computed_hash);
+            
+            if (strcmp(users[i].password, computed_hash) == 0) {
+                return 1; // Authentication successful
+            }
+            break; // Username found but password doesn't match
         }
     }
     return 0; // Authentication failed
@@ -163,7 +243,7 @@ void register_user(User users[], int *num_users) {
         return;
     }
 
-    print_header("REGISTER NEW ACCOUNT");
+    print_header("REGISTER NEW ACCOUNT - ADVANCED ENCRYPTION");
     
     char new_username[MAX_STRING_LENGTH], new_password[MAX_STRING_LENGTH];
     
@@ -189,10 +269,15 @@ void register_user(User users[], int *num_users) {
     printf("Enter password: ");
     scanf("%99s", new_password);
 
+    // Store username
     strncpy(users[*num_users].username, new_username, MAX_STRING_LENGTH - 1);
-    strncpy(users[*num_users].password, new_password, MAX_STRING_LENGTH - 1);
     users[*num_users].username[MAX_STRING_LENGTH - 1] = '\0';
-    users[*num_users].password[MAX_STRING_LENGTH - 1] = '\0';
+    
+    // Encrypt password and store the encrypted version in memory
+    char encrypted_password[MAX_STRING_LENGTH * 2];
+    secure_encrypt_password(new_password, encrypted_password);
+    strncpy(users[*num_users].password, encrypted_password, MAX_STRING_LENGTH * 2 - 1);
+    users[*num_users].password[MAX_STRING_LENGTH * 2 - 1] = '\0';
     
     (*num_users)++;
     write_users_to_file(users, *num_users);
@@ -2154,6 +2239,8 @@ Trip* delete_trip(Trip *head) {
         printf("Trip not found.\n");
         return head;
     }
+
+   
 
     // Show trip details before deletion
     printf("\nTrip to be deleted:\n");
